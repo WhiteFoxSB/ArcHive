@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, FolderOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '@/components/SearchBar';
 import { CategoryList } from '@/components/CategoryList';
 import { PaperList } from '@/components/PaperList';
@@ -15,6 +17,7 @@ import { Paper, Category } from '@/types/paper';
 type ViewMode = 'home' | 'category' | 'search';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -153,6 +156,15 @@ const Index = () => {
                     <p className="text-sm text-muted-foreground">Organize your academic library</p>
                   </div>
                 </div>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/projects')}
+                  className="flex items-center space-x-2"
+                >
+                  <FolderOpen className="h-4 w-4" />
+                  <span>Projects</span>
+                </Button>
               </div>
               
               <SearchBar

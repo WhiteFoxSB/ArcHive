@@ -1,6 +1,8 @@
 import { Paper, Category, PaperDatabase } from '@/types/paper';
+import { Project, ProjectDatabase } from '@/types/project';
 
 const STORAGE_KEY = 'research_papers_db';
+const PROJECTS_STORAGE_KEY = 'research_projects_db';
 
 // Default categories for research papers
 const DEFAULT_CATEGORIES: Category[] = [
@@ -51,7 +53,7 @@ class PaperStorage {
     );
   }
 
-  public addPaper(file: File, tags: string[]): Paper {
+  public addPaper(file: File, tags: string[], projectIds: string[] = []): Paper {
     const db = this.getDatabase();
     db.lastId += 1;
     
@@ -62,7 +64,8 @@ class PaperStorage {
       filePath: `/papers/${db.lastId}_${file.name}`, // Simulated path
       dateAdded: new Date().toISOString(),
       tags,
-      fileSize: file.size
+      fileSize: file.size,
+      projectIds
     };
 
     db.papers.push(paper);
@@ -123,4 +126,85 @@ class PaperStorage {
   }
 }
 
+class ProjectStorage {
+  private getDatabase(): ProjectDatabase {
+    const stored = localStorage.getItem(PROJECTS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return {
+      projects: [],
+      lastProjectId: 0
+    };
+  }
+
+  private saveDatabase(db: ProjectDatabase): void {
+    localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(db));
+  }
+
+  public getAllProjects(): Project[] {
+    const db = this.getDatabase();
+    return db.projects.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+  }
+
+  public createProject(name: string, description: string, color: string): Project {
+    const db = this.getDatabase();
+    db.lastProjectId += 1;
+    
+    const project: Project = {
+      id: db.lastProjectId.toString(),
+      name,
+      description,
+      color,
+      dateCreated: new Date().toISOString(),
+      paperIds: [],
+      paperCount: 0
+    };
+
+    db.projects.push(project);
+    this.saveDatabase(db);
+    
+    return project;
+  }
+
+  public addPaperToProject(projectId: string, paperId: string): void {
+    const db = this.getDatabase();
+    const project = db.projects.find(p => p.id === projectId);
+    
+    if (project && !project.paperIds.includes(paperId)) {
+      project.paperIds.push(paperId);
+      project.paperCount = project.paperIds.length;
+      this.saveDatabase(db);
+    }
+  }
+
+  public removePaperFromProject(projectId: string, paperId: string): void {
+    const db = this.getDatabase();
+    const project = db.projects.find(p => p.id === projectId);
+    
+    if (project) {
+      project.paperIds = project.paperIds.filter(id => id !== paperId);
+      project.paperCount = project.paperIds.length;
+      this.saveDatabase(db);
+    }
+  }
+
+  public getProjectPapers(projectId: string): Paper[] {
+    const db = this.getDatabase();
+    const project = db.projects.find(p => p.id === projectId);
+    
+    if (!project) return [];
+    
+    const papers = paperStorage.getAllPapers();
+    return papers.filter(paper => project.paperIds.includes(paper.id));
+  }
+
+  public deleteProject(projectId: string): void {
+    const db = this.getDatabase();
+    db.projects = db.projects.filter(project => project.id !== projectId);
+    this.saveDatabase(db);
+  }
+}
+
 export const paperStorage = new PaperStorage();
+export const projectStorage = new ProjectStorage();

@@ -6,6 +6,7 @@ export interface Paper {
   dateAdded: string;
   tags: string[];
   fileSize: number;
+  projectIds: string[];
 }
 
 export interface Category {
