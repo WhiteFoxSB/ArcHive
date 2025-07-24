@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar, Tags } from 'lucide-react';
+import { ExternalLink, Calendar, Tags, ZoomIn, ZoomOut } from 'lucide-react';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { Paper } from '@/types/paper';
+
+// Configure worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface PaperViewerProps {
   paper: Paper;
@@ -9,9 +14,17 @@ interface PaperViewerProps {
 }
 
 export function PaperViewer({ paper, onClose }: PaperViewerProps) {
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
+
   const handleOpenExternal = () => {
     // In a real desktop app, this would open the PDF with the system's default viewer
-    // For now, we'll show a placeholder
+    window.open(paper.filePath, '_blank');
+  };
+
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
   };
 
   return (
@@ -59,28 +72,101 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
         </div>
       </div>
 
-      {/* PDF Viewer Placeholder */}
-      <div className="flex-1 p-6">
-        <div className="h-full border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/20">
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
-              <ExternalLink className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <p className="text-lg font-medium text-foreground">PDF Viewer Coming Soon</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                In the full version, this will display an integrated PDF viewer with highlighting and markup capabilities.
-              </p>
+      {/* PDF Viewer Controls */}
+      {numPages > 0 && (
+        <div className="border-b border-border px-6 py-3 bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
-                className="mt-4"
-                onClick={handleOpenExternal}
+                size="sm"
+                onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
+                disabled={pageNumber <= 1}
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open in external viewer for now
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {pageNumber} of {numPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPageNumber(Math.min(numPages, pageNumber + 1))}
+                disabled={pageNumber >= numPages}
+              >
+                Next
+              </Button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setScale(Math.max(0.5, scale - 0.1))}
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground min-w-[4rem] text-center">
+                {Math.round(scale * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setScale(Math.min(2.0, scale + 0.1))}
+              >
+                <ZoomIn className="h-4 w-4" />
               </Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* PDF Viewer */}
+      <div className="flex-1 overflow-auto bg-muted/10">
+        <div className="flex justify-center p-6">
+          <Document
+            file={paper.filePath}
+            onLoadSuccess={onDocumentLoadSuccess}
+            loading={
+              <div className="flex items-center justify-center p-8">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto animate-pulse">
+                    <ExternalLink className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Loading PDF...</p>
+                </div>
+              </div>
+            }
+            error={
+              <div className="flex items-center justify-center p-8">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 bg-destructive/10 rounded-lg flex items-center justify-center mx-auto">
+                    <ExternalLink className="h-6 w-6 text-destructive" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Unable to load PDF</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This is a demo with simulated files
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3"
+                      onClick={handleOpenExternal}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Try external viewer
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            }
+          >
+            <Page
+              pageNumber={pageNumber}
+              scale={scale}
+              className="shadow-lg"
+            />
+          </Document>
         </div>
       </div>
     </div>
