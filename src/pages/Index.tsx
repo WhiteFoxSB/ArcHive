@@ -149,7 +149,7 @@ const Index = () => {
                     <BookOpen className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-foreground">Research Papers</h1>
+                    <h1 className="text-xl font-bold text-foreground">ArcHive</h1>
                     <p className="text-sm text-muted-foreground">Organize your academic library</p>
                   </div>
                 </div>
