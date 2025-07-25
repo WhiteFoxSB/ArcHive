@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { ProjectList } from '@/components/ProjectList';
 import { PaperList } from '@/components/PaperList';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
@@ -112,14 +114,22 @@ const Projects = () => {
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <FolderOpen className="h-6 w-6 text-primary-foreground" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <FolderOpen className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">Projects</h1>
+                <p className="text-sm text-muted-foreground">Organize papers into research projects</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Projects</h1>
-              <p className="text-sm text-muted-foreground">Organize papers into research projects</p>
-            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/">
+                <Home className="h-4 w-4 mr-2" />
+                Back to Library
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

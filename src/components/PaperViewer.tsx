@@ -19,8 +19,13 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
   const [scale, setScale] = useState<number>(1.0);
 
   const handleOpenExternal = () => {
-    // In a real desktop app, this would open the PDF with the system's default viewer
-    window.open(paper.filePath, '_blank');
+    // Create a blob URL from the file path and open it
+    if (paper.filePath.startsWith('blob:') || paper.filePath.startsWith('data:')) {
+      window.open(paper.filePath, '_blank');
+    } else {
+      // For local files, try to open them
+      window.open(paper.filePath, '_blank');
+    }
   };
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -143,9 +148,9 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
                     <ExternalLink className="h-6 w-6 text-destructive" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">Unable to load PDF</p>
+                    <p className="text-sm font-medium text-foreground">Select a PDF file to view</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      This is a demo with simulated files
+                      Upload a PDF to see it here
                     </p>
                     <Button
                       variant="outline"
@@ -154,7 +159,7 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
                       onClick={handleOpenExternal}
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Try external viewer
+                      Open file location
                     </Button>
                   </div>
                 </div>
