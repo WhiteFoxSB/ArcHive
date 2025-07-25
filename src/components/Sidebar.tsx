@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Search, Folder, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Folder, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SearchBar } from './SearchBar';
 import { Paper, Category } from '@/types/paper';
 
 interface SidebarProps {
@@ -32,16 +30,9 @@ export function Sidebar({
   viewMode,
   selectedCategory
 }: SidebarProps) {
-  const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
-
-  const filteredCategories = categories.filter(cat =>
-    cat.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-  );
-
-  const filteredPapers = papers.filter(paper =>
-    paper.originalName.toLowerCase().includes(sidebarSearchQuery.toLowerCase()) ||
-    paper.tags.some(tag => tag.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
-  );
+  // No search filtering in sidebar - use main search instead
+  const filteredCategories = categories;
+  const filteredPapers = papers;
 
   return (
     <div className={`
@@ -74,28 +65,12 @@ export function Sidebar({
               className="w-full hover:bg-secondary"
               onClick={() => onToggleCollapse()}
             >
-              <Search className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-full hover:bg-secondary"
-              onClick={() => onToggleCollapse()}
-            >
               <Folder className="h-4 w-4" />
             </Button>
           </div>
         ) : (
           // Expanded state
           <div className="p-4 space-y-4 h-full overflow-y-auto">
-            {/* Search */}
-            <div className="space-y-2">
-              <SearchBar
-                value={sidebarSearchQuery}
-                onChange={setSidebarSearchQuery}
-                placeholder="Search library..."
-              />
-            </div>
 
             {/* Categories */}
             {viewMode !== 'search' && (
