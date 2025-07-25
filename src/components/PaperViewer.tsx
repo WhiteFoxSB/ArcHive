@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar, Tags, ZoomIn, ZoomOut } from 'lucide-react';
+import { ExternalLink, Calendar, Tags, ZoomIn, ZoomOut, X, Home } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Paper } from '@/types/paper';
 
@@ -49,15 +49,24 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
                 </div>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleOpenExternal}
-              className="flex-shrink-0"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Open in PDF viewer
-            </Button>
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenExternal}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open in PDF viewer
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onClose}
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Back to Library
+              </Button>
+            </div>
           </div>
 
           {/* Tags */}

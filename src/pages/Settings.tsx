@@ -1,6 +1,8 @@
 import { Settings as SettingsIcon, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Settings = () => {
   return (
@@ -30,13 +32,24 @@ const Settings = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
-        <div className="space-y-6">
-          <div className="text-center py-12">
-            <div className="text-muted-foreground text-lg mb-2">Settings Page</div>
-            <div className="text-sm text-muted-foreground">
-              Configuration options will be added here
-            </div>
-          </div>
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Appearance</CardTitle>
+              <CardDescription>
+                Customize how ArcHive looks and feels
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Color Mode</h4>
+                  <p className="text-sm text-muted-foreground">Switch between light and dark themes</p>
+                </div>
+                <ThemeToggle />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

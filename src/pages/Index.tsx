@@ -133,65 +133,64 @@ const Index = () => {
           selectedCategory={selectedCategory}
         />
         <div className="flex-1 flex flex-col">
+          {/* Header - Always visible */}
+          <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+            <div className="container mx-auto px-6 py-4">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <BookOpen className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-foreground">ArcHive</h1>
+                    <p className="text-sm text-muted-foreground">Organize your academic library</p>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/settings')}
+                  className="flex items-center space-x-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
+                </Button>
+              </div>
+              
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search papers by title or tags..."
+              />
+            </div>
+          </div>
+
           {selectedPaper ? (
             <PaperViewer
               paper={selectedPaper}
               onClose={handleClosePaperViewer}
             />
           ) : (
-            <>
-              {/* Header */}
-              <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-                <div className="container mx-auto px-6 py-4">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                      <div>
-                        <h1 className="text-xl font-bold text-foreground">ArcHive</h1>
-                        <p className="text-sm text-muted-foreground">Organize your academic library</p>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigate('/settings')}
-                      className="flex items-center space-x-2"
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Settings</span>
-                    </Button>
-                  </div>
-                  
-                  <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Search papers by title or tags..."
+            /* Main Content */
+            <div className="container mx-auto px-6 py-8 flex-1 overflow-y-auto">
+              {viewMode === 'home' ? (
+                <div className="animate-fade-in">
+                  <CategoryList
+                    categories={categories}
+                    onCategoryClick={handleCategoryClick}
+                    selectedCategory={selectedCategory}
+                    isCompact={sidebarCollapsed}
                   />
                 </div>
-              </div>
-
-              {/* Main Content */}
-              <div className="container mx-auto px-6 py-8 flex-1 overflow-y-auto">
-                {viewMode === 'home' ? (
-                  <div className="animate-fade-in">
-                    <CategoryList
-                      categories={categories}
-                      onCategoryClick={handleCategoryClick}
-                      selectedCategory={selectedCategory}
-                    />
-                  </div>
-                ) : (
-                  <PaperList
-                    papers={papers}
-                    title={getViewTitle()}
-                    onBack={handleBackToHome}
-                    onPaperClick={handlePaperClick}
-                  />
-                )}
-              </div>
-            </>
+              ) : (
+                <PaperList
+                  papers={papers}
+                  title={getViewTitle()}
+                  onBack={handleBackToHome}
+                  onPaperClick={handlePaperClick}
+                />
+              )}
+            </div>
           )}
         </div>
       </div>
