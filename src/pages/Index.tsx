@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, FolderOpen } from 'lucide-react';
+import { BookOpen, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '@/components/SearchBar';
@@ -156,11 +156,11 @@ const Index = () => {
                     
                     <Button 
                       variant="outline" 
-                      onClick={() => navigate('/projects')}
+                      onClick={() => navigate('/settings')}
                       className="flex items-center space-x-2"
                     >
-                      <FolderOpen className="h-4 w-4" />
-                      <span>Projects</span>
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
                     </Button>
                   </div>
                   

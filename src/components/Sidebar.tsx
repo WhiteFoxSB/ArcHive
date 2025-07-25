@@ -1,7 +1,8 @@
-import { ChevronLeft, ChevronRight, Folder, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Folder, FileText, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Paper, Category } from '@/types/paper';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -30,6 +31,7 @@ export function Sidebar({
   viewMode,
   selectedCategory
 }: SidebarProps) {
+  const navigate = useNavigate();
   // No search filtering in sidebar - use main search instead
   const filteredCategories = categories;
   const filteredPapers = papers;
@@ -71,6 +73,17 @@ export function Sidebar({
         ) : (
           // Expanded state
           <div className="p-4 space-y-4 h-full overflow-y-auto">
+            {/* Projects Button */}
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => navigate('/projects')}
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Projects
+              </Button>
+            </div>
 
             {/* Categories */}
             {viewMode !== 'search' && (
