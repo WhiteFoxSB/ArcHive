@@ -5,9 +5,10 @@ import { Paper } from '@/types/paper';
 interface PaperCardProps {
   paper: Paper;
   onClick: () => void;
+  onTagClick?: (tag: string) => void;
 }
 
-export function PaperCard({ paper, onClick }: PaperCardProps) {
+export function PaperCard({ paper, onClick, onTagClick }: PaperCardProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -22,6 +23,11 @@ export function PaperCard({ paper, onClick }: PaperCardProps) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleTagClick = (e: React.MouseEvent, tag: string) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    onTagClick?.(tag);
   };
 
   return (
@@ -57,7 +63,12 @@ export function PaperCard({ paper, onClick }: PaperCardProps) {
               <Tag className="h-4 w-4 text-muted-foreground" />
               <div className="flex flex-wrap gap-1">
                 {paper.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
+                  <Badge 
+                    key={index} 
+                    variant="secondary" 
+                    className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                    onClick={(e) => handleTagClick(e, tag)}
+                  >
                     {tag}
                   </Badge>
                 ))}

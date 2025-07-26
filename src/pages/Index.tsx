@@ -83,6 +83,17 @@ const Index = () => {
     navigate(`/projects/${project.id}`);
   };
 
+  const handleTagClick = (tag: string) => {
+    // Check if tag corresponds to a category or search for papers with this tag
+    const category = categories.find(cat => cat.name === tag);
+    if (category) {
+      handleCategoryClick(tag);
+    } else {
+      // If it's not a category, perform a search for the tag
+      setSearchQuery(tag);
+    }
+  };
+
   const handleCategoryClick = (categoryName: string) => {
     const categoryPapers = paperStorage.getPapersByCategory(categoryName);
     setPapers(categoryPapers);
@@ -209,6 +220,7 @@ const Index = () => {
           onCategoryClick={handleCategoryClick}
           onPaperClick={handlePaperClick}
           onProjectClick={handleProjectClick}
+          onTagClick={handleTagClick}
           viewMode={viewMode}
           selectedCategory={selectedCategory}
         />
@@ -268,6 +280,7 @@ const Index = () => {
                   title={getViewTitle()}
                   onBack={handleBackToHome}
                   onPaperClick={handlePaperClick}
+                  onTagClick={handleTagClick}
                 />
               )}
             </div>

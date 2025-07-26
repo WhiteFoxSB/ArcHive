@@ -19,6 +19,7 @@ interface SidebarProps {
   onCategoryClick: (categoryName: string) => void;
   onPaperClick: (paper: Paper) => void;
   onProjectClick: (project: Project) => void;
+  onTagClick?: (tag: string) => void;
   viewMode: 'home' | 'category' | 'search';
   selectedCategory: string;
 }
@@ -35,6 +36,7 @@ export function Sidebar({
   onCategoryClick,
   onPaperClick,
   onProjectClick,
+  onTagClick,
   viewMode,
   selectedCategory
 }: SidebarProps) {
@@ -45,6 +47,11 @@ export function Sidebar({
   const filteredCategories = categories || [];
   const filteredPapers = papers || [];
   const safeProjects = projects || [];
+
+  const handleTagClick = (e: React.MouseEvent, tag: string) => {
+    e.stopPropagation(); // Prevent triggering the paper click
+    onTagClick?.(tag);
+  };
 
 
   return (
@@ -173,12 +180,17 @@ export function Sidebar({
                       <div className="text-sm font-medium truncate mb-1">
                         {paper.originalName.replace('.pdf', '')}
                       </div>
-                      <div className="flex flex-wrap gap-1">
-                        {paper.tags.slice(0, 2).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
+                       <div className="flex flex-wrap gap-1">
+                         {paper.tags.slice(0, 2).map((tag) => (
+                           <Badge 
+                             key={tag} 
+                             variant="outline" 
+                             className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                             onClick={(e) => handleTagClick(e, tag)}
+                           >
+                             {tag}
+                           </Badge>
+                         ))}
                         {paper.tags.length > 2 && (
                           <Badge variant="outline" className="text-xs">
                             +{paper.tags.length - 2}
