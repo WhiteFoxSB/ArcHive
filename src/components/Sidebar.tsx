@@ -42,8 +42,9 @@ export function Sidebar({
   const [isProjectsOpen, setIsProjectsOpen] = useState(true);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
 
-  const filteredCategories = categories;
-  const filteredPapers = papers;
+  const filteredCategories = categories || [];
+  const filteredPapers = papers || [];
+  const safeProjects = projects || [];
 
 
   return (
@@ -101,7 +102,7 @@ export function Sidebar({
                 </Button>
               </div>
               <CollapsibleContent className="space-y-1 mt-2">
-                {projects.map((project) => (
+                {safeProjects.map((project) => (
                   <div
                     key={project.id}
                     onClick={() => onProjectClick(project)}
