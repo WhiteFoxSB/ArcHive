@@ -5,14 +5,14 @@ import App from './App.tsx'
 import './index.css'
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <App />
-      </ThemeProvider>
-    </StrictMode>
-  );
+  <StrictMode>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <App />
+    </ThemeProvider>
+  </StrictMode>
+);

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Search, Folder, FolderOpen, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SearchBar } from './SearchBar';
 import { Paper, Category } from '@/types/paper';
 import { useNavigate } from 'react-router-dom';
 
@@ -76,7 +75,7 @@ export function Sidebar({
         ) : (
           // Expanded state
           <div className="p-4 space-y-4 h-full overflow-y-auto">
-            {/* Projects (currently a button) */}
+            {/* Projects Button */}
             <div className="space-y-2">
               <Button
                 variant="outline"
