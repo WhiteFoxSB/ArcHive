@@ -1,0 +1,40 @@
+directories:
+  output: release/${version}
+  buildResources: build
+icon: public/assets/icons/iconfiletransparent.ico
+appId: com.yourcompany.paper-vault-offline
+productName: ArcHive
+asar: false
+files:
+  - filter:
+      - dist
+      - dist-electron
+      - public/assets
+      - package.json
+extraResources:
+  - from: public/assets/
+    to: assets
+    filter:
+      - '**/*'
+mac:
+  icon: build/icon.icns
+  artifactName: ${productName}_${version}.${ext}
+  target:
+    - dmg
+win:
+  icon: public/assets/icons/transparent.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: ${productName}_${version}.${ext}
+linux:
+  icon: build/icon.png
+  target:
+    - AppImage
+  artifactName: ${productName}_${version}.${ext}
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+electronVersion: 37.2.4

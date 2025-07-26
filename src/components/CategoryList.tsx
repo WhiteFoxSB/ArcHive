@@ -5,9 +5,10 @@ interface CategoryListProps {
   categories: Category[];
   onCategoryClick: (categoryName: string) => void;
   selectedCategory?: string;
+  isCompact?: boolean;
 }
 
-export function CategoryList({ categories, onCategoryClick, selectedCategory }: CategoryListProps) {
+export function CategoryList({ categories, onCategoryClick, selectedCategory, isCompact = false }: CategoryListProps) {
   if (categories.length === 0) {
     return (
       <div className="text-center py-12">
@@ -28,7 +29,7 @@ export function CategoryList({ categories, onCategoryClick, selectedCategory }: 
         </span>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className={`grid gap-3 ${isCompact ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
         {categories.map((category) => (
           <div
             key={category.id}

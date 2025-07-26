@@ -10,42 +10,47 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Academic blue-gray theme for research app */
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    /* Light Cream and charcoal/dark warm brown contrast */
+    --background: 45 100% 96%;
+    --foreground: 30 20% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card: 45 100% 98%;
+    --card-foreground: 30 20% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover: 45 100% 98%;
+    --popover-foreground: 30 20% 20%;
 
-    /* Academic blue primary */
+    /* Academic blue primary 
     --primary: 210 100% 45%;
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 210 100% 65%;
+    --primary-glow: 210 100% 65%;*/
+
+    /* Golden Yellow primary (visible on cream) */
+    --primary: 45 100% 60%;            /* Golden yellow */
+    --primary-foreground: 0 0% 10%;    /* Dark text on yellow */
+    --primary-glow: 45 100% 60%;       /* Brighter yellow glow */
 
     /* Soft academic gray */
-    --secondary: 210 15% 95%;
-    --secondary-foreground: 215 25% 25%;
+    --secondary: 45 40% 92%;
+    --secondary-foreground: 30 20% 25%;
 
-    --muted: 210 15% 96%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 45 30% 94%;
+    --muted-foreground: 30 10% 50%;
 
     /* Research accent - warm orange */
     --accent: 25 95% 60%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 88%;
-    --input: 210 20% 92%;
-    --ring: 210 100% 45%;
+    --border: 45 30% 88%;
+    --input: 45 30% 92%;
+    --ring: 45 100% 60%;
 
     /* Design system tokens */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 15% 98%));
+    --gradient-card: linear-gradient(145deg, hsl(45 100% 98%), hsl(45 40% 92%));
     --shadow-soft: 0 2px 8px -2px hsl(var(--primary) / 0.1);
     --shadow-paper: 0 4px 12px -4px hsl(var(--foreground) / 0.15);
     --shadow-modal: 0 20px 40px -8px hsl(var(--foreground) / 0.25);
@@ -55,21 +60,21 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 45 60% 95%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 30 20% 20%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 45 100% 60%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 30 20% 10%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 45 30% 90%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 30 20% 20%;
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 45 20% 85%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 45 100% 60%;
   }
 
   .dark {
@@ -117,6 +122,6 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Search, Folder, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Folder, FolderOpen, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SearchBar } from './SearchBar';
 import { Paper, Category } from '@/types/paper';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -32,16 +33,11 @@ export function Sidebar({
   viewMode,
   selectedCategory
 }: SidebarProps) {
-  const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
+  const navigate = useNavigate();
 
-  const filteredCategories = categories.filter(cat =>
-    cat.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-  );
+  const filteredCategories = categories
+  const filteredPapers = papers;
 
-  const filteredPapers = papers.filter(paper =>
-    paper.originalName.toLowerCase().includes(sidebarSearchQuery.toLowerCase()) ||
-    paper.tags.some(tag => tag.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
-  );
 
   return (
     <div className={`
@@ -74,27 +70,22 @@ export function Sidebar({
               className="w-full hover:bg-secondary"
               onClick={() => onToggleCollapse()}
             >
-              <Search className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-full hover:bg-secondary"
-              onClick={() => onToggleCollapse()}
-            >
               <Folder className="h-4 w-4" />
             </Button>
           </div>
         ) : (
           // Expanded state
           <div className="p-4 space-y-4 h-full overflow-y-auto">
-            {/* Search */}
+            {/* Projects (currently a button) */}
             <div className="space-y-2">
-              <SearchBar
-                value={sidebarSearchQuery}
-                onChange={setSidebarSearchQuery}
-                placeholder="Search library..."
-              />
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => navigate('/projects')}
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Projects
+              </Button>
             </div>
 
             {/* Categories */}

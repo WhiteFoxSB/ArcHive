@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { ProjectList } from '@/components/ProjectList';
 import { PaperList } from '@/components/PaperList';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
@@ -121,6 +123,12 @@ const Projects = () => {
               <p className="text-sm text-muted-foreground">Organize papers into research projects</p>
             </div>
           </div>
+          <Button asChild variant="outline" size="sm">
+              <Link to="/">
+                <Home className="h-4 w-4 mr-2" />
+                Back to Library
+              </Link>
+          </Button>
         </div>
       </div>
 

@@ -156,7 +156,7 @@ export function TaggingModal({ isOpen, onClose, onComplete, fileName }: TaggingM
               disabled={selectedTags.length === 0}
               className="bg-gradient-primary"
             >
-              Save Paper ({selectedTags.length} tags)
+              Save Paper
             </Button>
           </div>
         </div>

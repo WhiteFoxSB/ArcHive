@@ -48,6 +48,16 @@ export function PaperList({ papers, title, onBack, onPaperClick }: PaperListProp
           ))}
         </div>
       )}
+      <main className="flex-1 overflow-auto p-6 flex flex-col items-center">
+        {papers.map((paper) => (
+          <div key={paper.id} className="w-full max-w-3xl mb-4">
+            <PaperCard
+              paper={paper} onClick={function (): void {
+                throw new Error('Function not implemented.');
+              } } />
+          </div>
+      ))}
+    </main>
     </div>
   );
 }

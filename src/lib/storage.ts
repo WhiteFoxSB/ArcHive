@@ -53,6 +53,23 @@ class PaperStorage {
     );
   }
 
+
+  public addPaperEntry(paper: Paper): void {
+    const db = this.getDatabase();
+  
+    db.lastId += 1;
+    paper.id = db.lastId.toString();
+  
+    db.papers.push(paper);
+    this.updateCategoryPaperCounts(db);
+    this.saveDatabase(db);
+
+    
+
+  }
+  
+
+  /** @deprecated Use addPaperEntry with full Paper object instead */
   public addPaper(file: File, tags: string[], projectIds: string[] = []): Paper {
     const db = this.getDatabase();
     db.lastId += 1;
@@ -65,7 +82,11 @@ class PaperStorage {
       dateAdded: new Date().toISOString(),
       tags,
       fileSize: file.size,
-      projectIds
+      projectIds,
+      authors: [],
+      journal: '',
+      yearPublished: 0,
+      doi: ''
     };
 
     db.papers.push(paper);

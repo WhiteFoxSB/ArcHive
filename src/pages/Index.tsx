@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, FolderOpen } from 'lucide-react';
+import { BookOpen, FolderOpen, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '@/components/SearchBar';
@@ -29,10 +29,12 @@ const Index = () => {
   const [taggingModalOpen, setTaggingModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
   useEffect(() => {
     loadData();
   }, []);
+
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -44,6 +46,29 @@ const Index = () => {
       setPapers([]);
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  /*useEffect(() => {
+    console.log("🔍 Trying to call testWrite");
+    if (window.electronAPI?.testWrite) {
+      window.electronAPI.testWrite()
+        .then((path) => {
+          console.log("✅ testWrite success:", path);
+        })
+        .catch((err) => {
+          console.error("❌ testWrite failed:", err);
+        });
+    } else {
+      console.error("❌ testWrite not found on electronAPI");
+    }
+  }, []);*/
+  
 
   const loadData = () => {
     const allCategories = paperStorage.getAllCategories();
@@ -64,10 +89,52 @@ const Index = () => {
     setSelectedCategory('');
   };
 
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-    setTaggingModalOpen(true);
+
+  //logging and test cases
+  //console.log('window.electronAPI:', window.electronAPI);
+
+  /*useEffect(() => {
+    const test = async () => {
+      const testPath = await window.electronAPI.testWrite();
+      console.log('Test file written to:', testPath);
+    };
+    test();
+  }, []);*/
+
+  const handleFileSelect = async (file: File) => {
+    try {
+      const savedPath = await window.electronAPI.savePdfToStorage(file);
+  
+      const newPaper: Paper = {
+        originalName: file.name,
+        dateAdded: new Date().toISOString(),
+        filePath: savedPath, // ← full path to file on disk
+        tags: [],
+        id: '',
+        fileName: '',
+        fileSize: 0,
+        projectIds: [],
+        authors: [],
+        journal: '',
+        yearPublished: 0,
+        doi: ''
+      };
+  
+      setSelectedFile(file); // Keep for TaggingModal
+      setPendingPaper(newPaper); // Store for tagging completion
+      setTaggingModalOpen(true);
+    } catch (err) {
+      toast({
+        title: "Error saving PDF",
+        description: "There was a problem writing the file to disk.",
+        variant: "destructive",
+      });
+    }
   };
+  
+  const [pendingPaper, setPendingPaper] = useState<Paper | null>(null);
+
+  
 
   const handleTaggingComplete = (tags: string[]) => {
     if (selectedFile) {
@@ -95,6 +162,7 @@ const Index = () => {
         });
       }
     }
+    
   };
 
   const handlePaperClick = (paper: Paper) => {
@@ -115,35 +183,27 @@ const Index = () => {
     return '';
   };
 
+  
+
   return (
     <div className="min-h-screen bg-background">
-      {selectedPaper ? (
-        // Layout with sidebar when paper is selected
-        <div className="flex h-screen">
-          <Sidebar
-            isCollapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            categories={categories}
-            papers={papers}
-            selectedPaper={selectedPaper}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onCategoryClick={handleCategoryClick}
-            onPaperClick={handlePaperClick}
-            viewMode={viewMode}
-            selectedCategory={selectedCategory}
-          />
-          <div className="flex-1 flex flex-col">
-            <PaperViewer
-              paper={selectedPaper}
-              onClose={handleClosePaperViewer}
-            />
-          </div>
-        </div>
-      ) : (
-        // Original full-width layout when no paper is selected
-        <>
-          {/* Header */}
+      {/* Always show layout with sidebar */}
+      <div className="flex h-screen">
+        <Sidebar
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          categories={categories}
+          papers={papers}
+          selectedPaper={selectedPaper}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onCategoryClick={handleCategoryClick}
+          onPaperClick={handlePaperClick}
+          viewMode={viewMode}
+          selectedCategory={selectedCategory}
+        />
+        <div className="flex-1 flex flex-col">
+          {/* Header - Always visible */}
           <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
             <div className="container mx-auto px-6 py-4">
               <div className="flex items-center justify-between mb-6">
@@ -159,11 +219,11 @@ const Index = () => {
                 
                 <Button 
                   variant="outline" 
-                  onClick={() => navigate('/projects')}
+                  onClick={() => navigate('/settings')}
                   className="flex items-center space-x-2"
                 >
-                  <FolderOpen className="h-4 w-4" />
-                  <span>Projects</span>
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
                 </Button>
               </div>
               
@@ -175,30 +235,77 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="container mx-auto px-6 py-8">
-            {viewMode === 'home' ? (
-              <div className="animate-fade-in">
-                <CategoryList
-                  categories={categories}
-                  onCategoryClick={handleCategoryClick}
-                  selectedCategory={selectedCategory}
+          {selectedPaper ? (
+            <PaperViewer
+              paper={selectedPaper}
+              onClose={handleClosePaperViewer}
+            />
+          ) : (
+            /* Main Content */
+            <div className="container mx-auto px-6 py-8 flex-1 overflow-y-auto">
+              {viewMode === 'home' ? (
+                <div className="animate-fade-in">
+                  <CategoryList
+                    categories={categories}
+                    onCategoryClick={handleCategoryClick}
+                    selectedCategory={selectedCategory}
+                    isCompact={sidebarCollapsed}
+                  />
+                </div>
+              ) : (
+                <PaperList
+                  papers={papers}
+                  title={getViewTitle()}
+                  onBack={handleBackToHome}
+                  onPaperClick={handlePaperClick}
                 />
-              </div>
-            ) : (
-              <PaperList
-                papers={papers}
-                title={getViewTitle()}
-                onBack={handleBackToHome}
-                onPaperClick={handlePaperClick}
-              />
-            )}
-          </div>
-        </>
-      )}
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Floating Upload Button */}
       <FloatingUploadButton onClick={() => setUploadModalOpen(true)} />
+
+
+
+
+      {/* Settings Button + Theme Slider */}
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+
+        <div className="relative group">
+          <button
+            //variant="outline"
+            onClick={() => navigate("/settings")}
+            //className="ml-auto"
+            className="p-3 rounded-full shadow-lg bg-card text-foreground border border-border transition-all hover:scale-105"
+            aria-label="Theme Settings"
+          >
+            ⚙️
+          </button>
+          <div className="absolute top-14 right-20 w-64 bg-popover text-popover-foreground border border-border rounded-xl shadow-modal p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <h3 className="text-sm mb-2">Theme</h3>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={theme === "dark" ? 100 : 0}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                setTheme(value > 50 ? "dark" : "light");
+              }}
+              className="w-full accent-primary"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>Light</span>
+              <span>Dark</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
 
       {/* Modals */}
       <UploadModal
@@ -216,5 +323,16 @@ const Index = () => {
     </div>
   );
 };
+
+      
+
+
+      
+
+
+      
+
+console.log('window.electronAPI:', window.electronAPI);
+
 
 export default Index;

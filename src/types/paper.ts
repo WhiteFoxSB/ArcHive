@@ -7,6 +7,12 @@ export interface Paper {
   tags: string[];
   fileSize: number;
   projectIds: string[];
+
+  // New metadata fields
+  authors: string[];
+  journal: string;
+  yearPublished: number;
+  doi: string;
 }
 
 export interface Category {

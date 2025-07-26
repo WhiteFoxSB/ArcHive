@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar, Tags, ZoomIn, ZoomOut } from 'lucide-react';
+import { ExternalLink, Calendar, Tags, ZoomIn, ZoomOut, X, Home } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Paper } from '@/types/paper';
 
@@ -19,8 +19,13 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
   const [scale, setScale] = useState<number>(1.0);
 
   const handleOpenExternal = () => {
-    // In a real desktop app, this would open the PDF with the system's default viewer
-    window.open(paper.filePath, '_blank');
+    // Create a blob URL from the file path and open it
+    if (paper.filePath.startsWith('blob:') || paper.filePath.startsWith('data:')) {
+      window.open(paper.filePath, '_blank');
+    } else {
+      // For local files, try to open them
+      window.open(paper.filePath, '_blank');
+    }
   };
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -52,6 +57,14 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               Open in PDF viewer
+            </Button>
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={onClose}
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Back to Library
             </Button>
           </div>
 
@@ -124,7 +137,7 @@ export function PaperViewer({ paper, onClose }: PaperViewerProps) {
       <div className="flex-1 overflow-auto bg-muted/10">
         <div className="flex justify-center p-6">
           <Document
-            file={paper.filePath}
+            file={{ url: `file://${paper.filePath}` }}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
               <div className="flex items-center justify-center p-8">

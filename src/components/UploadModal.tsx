@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Upload, File, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { parsePdf } from '@/lib/ipc'
 
 interface UploadModalProps {
   isOpen: boolean;
