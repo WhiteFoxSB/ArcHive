@@ -1,56 +1,67 @@
-import { contextBridge as i, ipcRenderer as n } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 console.log("👋 preload script loaded");
-i.exposeInMainWorld("electronAPI", {
+contextBridge.exposeInMainWorld("electronAPI", {
   // File operations
-  readFile: (e) => n.invoke("read-file", e),
-  writeFile: (e, t) => n.invoke("write-file", e, t),
-  checkFileExists: (e) => n.invoke("check-file-exists", e),
+  readFile: (filePath) => ipcRenderer.invoke("read-file", filePath),
+  writeFile: (filePath, data) => ipcRenderer.invoke("write-file", filePath, data),
+  checkFileExists: (filePath) => ipcRenderer.invoke("check-file-exists", filePath),
   /*savePdfToStorage: async (file: File): Promise<string> => {
     const buffer = await file.arrayBuffer();
     const savedPath = await ipcRenderer.invoke('save-pdf-to-storage', buffer, file.name);
     return savedPath;
   },*/
-  savePdfToStorage: async (e) => {
-    const t = await e.arrayBuffer();
-    return n.invoke("save-pdf-to-storage", {
-      name: e.name,
-      buffer: Buffer.from(t)
+  savePdfToStorage: async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    return ipcRenderer.invoke("save-pdf-to-storage", {
+      name: file.name,
+      buffer: Buffer.from(arrayBuffer)
     });
   },
   //test operation
-  testWrite: () => n.invoke("test-write"),
+  testWrite: () => ipcRenderer.invoke("test-write"),
   // Dialog operations
-  showSaveDialog: () => n.invoke("show-save-dialog"),
-  showOpenDialog: (e) => n.invoke("show-open-dialog", e),
+  showSaveDialog: () => ipcRenderer.invoke("show-save-dialog"),
+  showOpenDialog: (options) => ipcRenderer.invoke("show-open-dialog", options),
   // Event listeners
-  onFileOpened: (e) => {
-    n.on("file-opened", (t, o) => e(o));
+  onFileOpened: (callback) => {
+    ipcRenderer.on("file-opened", (_, filePath) => callback(filePath));
   },
   // Remove listeners
-  removeAllListeners: (e) => {
-    n.removeAllListeners(e);
+  removeAllListeners: (channel) => {
+    ipcRenderer.removeAllListeners(channel);
   },
   // Platform info
   platform: process.platform,
-  isElectron: !0
+  isElectron: true
 });
-function d(e = ["complete", "interactive"]) {
-  return new Promise((t) => {
-    e.includes(document.readyState) ? t(!0) : document.addEventListener("readystatechange", () => {
-      e.includes(document.readyState) && t(!0);
-    });
+function domReady(condition = ["complete", "interactive"]) {
+  return new Promise((resolve) => {
+    if (condition.includes(document.readyState)) {
+      resolve(true);
+    } else {
+      document.addEventListener("readystatechange", () => {
+        if (condition.includes(document.readyState)) {
+          resolve(true);
+        }
+      });
+    }
   });
 }
-const a = {
-  append(e, t) {
-    Array.from(e.children).find((o) => o === t) || e.appendChild(t);
+const safeDOM = {
+  append(parent, child) {
+    if (!Array.from(parent.children).find((c) => c === child)) {
+      parent.appendChild(child);
+    }
   },
-  remove(e, t) {
-    Array.from(e.children).find((o) => o === t) && e.removeChild(t);
+  remove(parent, child) {
+    if (Array.from(parent.children).find((c) => c === child)) {
+      parent.removeChild(child);
+    }
   }
 };
-function s() {
-  const e = "loaders-css__square-spin", t = `
+function useLoading() {
+  const className = "loaders-css__square-spin";
+  const styleContent = `
 @keyframes square-spin {
   25% { 
     transform: perspective(100px) rotateX(180deg) rotateY(0); 
@@ -65,7 +76,7 @@ function s() {
     transform: perspective(100px) rotateX(0) rotateY(0); 
   }
 }
-.${e} > div {
+.${className} > div {
   animation-fill-mode: both;
   width: 50px;
   height: 50px;
@@ -84,18 +95,26 @@ function s() {
   background: #282c34;
   z-index: 9;
 }
-    `, o = document.createElement("style"), r = document.createElement("div");
-  return o.id = "app-loading-style", o.innerHTML = t, r.className = "app-loading-wrap", r.innerHTML = `<div class="${e}"><div></div></div>`, {
+    `;
+  const oStyle = document.createElement("style");
+  const oDiv = document.createElement("div");
+  oStyle.id = "app-loading-style";
+  oStyle.innerHTML = styleContent;
+  oDiv.className = "app-loading-wrap";
+  oDiv.innerHTML = `<div class="${className}"><div></div></div>`;
+  return {
     appendLoading() {
-      a.append(document.head, o), a.append(document.body, r);
+      safeDOM.append(document.head, oStyle);
+      safeDOM.append(document.body, oDiv);
     },
     removeLoading() {
-      a.remove(document.head, o), a.remove(document.body, r);
+      safeDOM.remove(document.head, oStyle);
+      safeDOM.remove(document.body, oDiv);
     }
   };
 }
-const { appendLoading: p, removeLoading: c } = s();
-d().then(p);
-window.onmessage = (e) => {
-  e.data.payload === "removeLoading" && c();
+const { appendLoading, removeLoading } = useLoading();
+domReady().then(appendLoading);
+window.onmessage = (ev) => {
+  ev.data.payload === "removeLoading" && removeLoading();
 };
