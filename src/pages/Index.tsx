@@ -10,9 +10,10 @@ import { PaperViewer } from '@/components/PaperViewer';
 import { UploadModal } from '@/components/UploadModal';
 import { TaggingModal } from '@/components/TaggingModal';
 import { FloatingUploadButton } from '@/components/FloatingUploadButton';
-import { paperStorage } from '@/lib/storage';
+import { paperStorage, projectStorage } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Paper, Category } from '@/types/paper';
+import { Project } from '@/types/project';
 
 type ViewMode = 'home' | 'category' | 'search';
 
@@ -21,6 +22,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
@@ -73,6 +75,23 @@ const Index = () => {
   const loadData = () => {
     const allCategories = paperStorage.getAllCategories();
     setCategories(allCategories);
+    const allProjects = projectStorage.getAllProjects();
+    setProjects(allProjects);
+  };
+
+  const handleProjectClick = (project: Project) => {
+    navigate(`/projects/${project.id}`);
+  };
+
+  const handleTagClick = (tag: string) => {
+    // Check if tag corresponds to a category or search for papers with this tag
+    const category = categories.find(cat => cat.name === tag);
+    if (category) {
+      handleCategoryClick(tag);
+    } else {
+      // If it's not a category, perform a search for the tag
+      setSearchQuery(tag);
+    }
   };
 
   const handleCategoryClick = (categoryName: string) => {
@@ -194,11 +213,14 @@ const Index = () => {
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           categories={categories}
           papers={papers}
+          projects={projects}
           selectedPaper={selectedPaper}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onCategoryClick={handleCategoryClick}
           onPaperClick={handlePaperClick}
+          onProjectClick={handleProjectClick}
+          onTagClick={handleTagClick}
           viewMode={viewMode}
           selectedCategory={selectedCategory}
         />
@@ -258,6 +280,7 @@ const Index = () => {
                   title={getViewTitle()}
                   onBack={handleBackToHome}
                   onPaperClick={handlePaperClick}
+                  onTagClick={handleTagClick}
                 />
               )}
             </div>

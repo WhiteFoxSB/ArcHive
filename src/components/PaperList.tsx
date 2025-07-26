@@ -8,9 +8,10 @@ interface PaperListProps {
   title: string;
   onBack: () => void;
   onPaperClick: (paper: Paper) => void;
+  onTagClick?: (tag: string) => void;
 }
 
-export function PaperList({ papers, title, onBack, onPaperClick }: PaperListProps) {
+export function PaperList({ papers, title, onBack, onPaperClick, onTagClick }: PaperListProps) {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center space-x-4">
@@ -44,20 +45,11 @@ export function PaperList({ papers, title, onBack, onPaperClick }: PaperListProp
               key={paper.id}
               paper={paper}
               onClick={() => onPaperClick(paper)}
+              onTagClick={onTagClick}
             />
           ))}
         </div>
       )}
-      <main className="flex-1 overflow-auto p-6 flex flex-col items-center">
-        {papers.map((paper) => (
-          <div key={paper.id} className="w-full max-w-3xl mb-4">
-            <PaperCard
-              paper={paper} onClick={function (): void {
-                throw new Error('Function not implemented.');
-              } } />
-          </div>
-      ))}
-    </main>
     </div>
   );
 }
