@@ -1,6 +1,11 @@
 // Electron API types
 export interface ElectronAPI {
-    
+    // File operations
+    readFile: (filePath: string) => Promise<any>;
+    writeFile: (filePath: string, data: string) => Promise<boolean>;
+    checkFileExists: (filePath: string) => Promise<boolean>;
+    savePdfToStorage: (file: File) => Promise<string>;
+    testWrite: () => Promise<string>;
     
     // Dialog operations
     showSaveDialog: () => Promise<{ canceled: boolean; filePath?: string }>;
@@ -21,17 +26,7 @@ export interface ElectronAPI {
   
   declare global {
     interface Window {
-      electron: {
-        ipcRenderer: {
-          invoke: (channel: string, ...args: any[]) => Promise<any>;
-          // You can add more IPC methods if needed
-        };
-      };
-      electronAPI: {
-        savePdfToStorage: (file: File) => Promise<string>;
-        testWrite: () => Promise<string>;
-      }
-      ElectronAPI;
+      electronAPI: ElectronAPI;
     }
   }
   

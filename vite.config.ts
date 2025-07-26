@@ -8,7 +8,9 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-
+  server: {
+    port: 8080
+  },
   plugins: [
     react(),
     viteStaticCopy({
@@ -49,7 +51,8 @@ export default defineConfig({
             rollupOptions: {
               external: ['electron'],
               output: {
-                entryFileNames: 'preload.js', // <- Make sure output is preload.js
+                entryFileNames: 'preload.js',
+                format: 'cjs', // CommonJS format for sandbox compatibility
               },
             },
           },

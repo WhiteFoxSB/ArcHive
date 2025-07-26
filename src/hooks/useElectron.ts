@@ -8,7 +8,7 @@ export function useElectron() {
   useEffect(() => {
     if (window.electronAPI) {
       setIsElectron(true);
-      setElectronAPI(window.electronAPI);
+      setElectronAPI(window.electronAPI as ElectronAPI);
     }
   }, []);
 

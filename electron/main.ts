@@ -53,7 +53,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: false, // Needed for loading local PDFs
-      // sandbox: false
+      sandbox: false // Required for preload script compatibility
     },
     titleBarStyle: 'default',
     title: 'ArcHive',
